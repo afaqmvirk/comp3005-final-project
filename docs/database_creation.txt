@@ -1,0 +1,213 @@
+-- Health and Fitness Club Management System Database Schema
+-- Raymond Liu 101264487
+-- Afak
+
+-- Drop tables in correct order (dependent tables first)
+DROP TABLE IF EXISTS enrollment;
+DROP TABLE IF EXISTS session;
+DROP TABLE IF EXISTS schedule;
+DROP TABLE IF EXISTS item;
+DROP TABLE IF EXISTS bill;
+DROP TABLE IF EXISTS goal;
+DROP TABLE IF EXISTS metric;
+DROP TABLE IF EXISTS equipment;
+DROP TABLE IF EXISTS "user";
+DROP TABLE IF EXISTS schedule_type;
+DROP TABLE IF EXISTS equipment_status;
+DROP TABLE IF EXISTS room;
+DROP TABLE IF EXISTS metric_type;
+DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS service;
+
+-- Create service table
+CREATE TABLE service (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL
+);
+
+-- Create role table
+CREATE TABLE role (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Create user table
+CREATE TABLE "user" (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    date_of_birth DATE,
+    sex CHAR(1) CHECK (sex IN ('M', 'F', 'O')),
+    phone VARCHAR(20),
+    role INT NOT NULL,
+    FOREIGN KEY (role) REFERENCES role(id)
+);
+
+-- Create bill table
+CREATE TABLE bill (
+    id SERIAL PRIMARY KEY,
+    admin_id INT NOT NULL,
+    member_id INT NOT NULL,
+    date DATE NOT NULL,
+    paid BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (admin_id) REFERENCES "user"(id),
+    FOREIGN KEY (member_id) REFERENCES "user"(id)
+);
+
+-- Create item table
+CREATE TABLE item (
+    id SERIAL PRIMARY KEY,
+    bill_id INT NOT NULL,
+    service_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (bill_id) REFERENCES bill(id) ON DELETE CASCADE,
+    FOREIGN KEY (service_id) REFERENCES service(id)
+);
+
+-- Create metric_type table
+CREATE TABLE metric_type (
+    id SERIAL PRIMARY KEY,
+    metric_name VARCHAR(100) NOT NULL,
+    metric_desc TEXT
+);
+
+-- Create metric table
+CREATE TABLE metric (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    metric_type INT NOT NULL,
+    value DECIMAL(10, 2) NOT NULL,
+    logged_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
+    FOREIGN KEY (metric_type) REFERENCES metric_type(id)
+);
+
+-- Create goal table
+CREATE TABLE goal (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    metric_id INT NOT NULL,
+    goal_date DATE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
+    FOREIGN KEY (metric_id) REFERENCES metric(id)
+);
+
+-- Create schedule_type table
+CREATE TABLE schedule_type (
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Create room table
+CREATE TABLE room (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    capacity INT NOT NULL
+);
+
+-- Create schedule table
+CREATE TABLE schedule (
+    id SERIAL PRIMARY KEY,
+    trainer_id INT NOT NULL,
+    date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    type INT NOT NULL,
+    FOREIGN KEY (trainer_id) REFERENCES "user"(id),
+    FOREIGN KEY (type) REFERENCES schedule_type(id)
+);
+
+-- Create session table
+CREATE TABLE session (
+    id SERIAL PRIMARY KEY,
+    schedule_id INT NOT NULL,
+    size INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    "desc" TEXT,
+    location VARCHAR(255),
+    sex_restrict CHAR(1) CHECK (sex_restrict IN ('M', 'F', 'A')),
+    FOREIGN KEY (schedule_id) REFERENCES schedule(id) ON DELETE CASCADE
+);
+
+-- Create enrollment table
+CREATE TABLE enrollment (
+    id SERIAL PRIMARY KEY,
+    session_id INT NOT NULL,
+    member_id INT NOT NULL,
+    attended BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (session_id) REFERENCES session(id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES "user"(id),
+    UNIQUE (session_id, member_id)
+);
+
+-- Create equipment_status table
+CREATE TABLE equipment_status (
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Create equipment table
+CREATE TABLE equipment (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    room_id INT,
+    status_id INT NOT NULL,
+    FOREIGN KEY (room_id) REFERENCES room(id),
+    FOREIGN KEY (status_id) REFERENCES equipment_status(id)
+);
+
+-- Role values
+INSERT INTO role (name) VALUES 
+    ('Member'),
+    ('Trainer'),
+    ('Admin');
+
+-- schedule_type table values
+INSERT INTO schedule_type (type) VALUES 
+    ('Group Class'),
+    ('Personal Training'),
+    ('Consultation');
+
+-- equipment_status table values
+INSERT INTO equipment_status (type) VALUES 
+    ('Available'),
+    ('In Use'),
+    ('Maintenance'),
+    ('Out of Service');
+
+-- metric_type table values
+INSERT INTO metric_type (metric_name, metric_desc) VALUES 
+    ('Weight', 'Body weight in pounds'),
+    ('Body Fat %', 'Body fat percentage'),
+    ('BMI', 'Body Mass Index'),
+    ('Heart Rate', 'Resting heart rate (bpm)'),
+    ('Height', 'Height in inches');
+
+-- Adding services
+INSERT INTO service (name, price) VALUES 
+    ('Monthly Membership', 49.99),
+    ('Annual Membership', 499.99),
+    ('Personal Training Session (60 min)', 75.00),
+    ('Personal Training Package (10 sessions)', 650.00),
+    ('Group Fitness Class Drop-In', 15.00),
+    ('Group Fitness Class Package (10 classes)', 120.00),
+    ('Nutritional Consultation', 100.00),
+    ('Fitness Assessment', 50.00),
+    ('Guest Pass (Single Day)', 20.00),
+    ('Locker Rental (Monthly)', 10.00);
+
+-- Adding rooms
+INSERT INTO room (name, capacity) VALUES 
+    ('Yoga Studio A', 20),
+    ('Spin Room', 25),
+    ('Weight Training Floor', 50),
+    ('Cardio Zone', 40),
+    ('Group Fitness Studio B', 30),
+    ('Personal Training Room 1', 2),
+    ('Personal Training Room 2', 2),
+    ('Boxing Studio', 15),
+    ('Pilates Studio', 12),
+    ('Multi-Purpose Room', 35);
