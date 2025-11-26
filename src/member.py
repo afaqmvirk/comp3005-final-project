@@ -1,4 +1,5 @@
-# Health and Fitness Club Management System
+# Raymond Liu 101264487
+# Afak
 # Member Functions
 
 from datetime import datetime, date
@@ -18,7 +19,7 @@ def member_dashboard(session, user):
     if recent_metrics:
         print("\nRecent Health Metrics:")
         for metric in recent_metrics:
-            print(f"  - {metric.metric_type_obj.metric_name}: {metric.value} "
+            print(f"- {metric.metric_type_obj.metric_name}: {metric.value} "
                   f"({metric.logged_date.strftime('%Y-%m-%d %H:%M')})")
     else:
         print("\nNo health metrics recorded yet.")
@@ -30,7 +31,7 @@ def member_dashboard(session, user):
         print(f"\nActive Fitness Goals: {len(goals)}")
         for goal in goals:
             metric = goal.target_metric
-            print(f"  - Target: {metric.metric_type_obj.metric_name} = {metric.value} by {goal.goal_date}")
+            print(f"- Target: {metric.metric_type_obj.metric_name} = {metric.value} by {goal.goal_date}")
     else:
         print("\nNo fitness goals set yet.")
     
@@ -45,7 +46,7 @@ def member_dashboard(session, user):
         print("\nUpcoming Sessions:")
         for enrollment in upcoming:
             sched = enrollment.session.schedule
-            print(f"  - {enrollment.session.name} - {sched.date} at {sched.start_time}")
+            print(f"- {enrollment.session.name} - {sched.date} at {sched.start_time}")
     else:
         print("\nNo upcoming sessions scheduled.")
 
@@ -134,7 +135,7 @@ def view_health_metrics(session, user):
         if metrics:
             print(f"\n{mt.metric_name}:")
             for metric in metrics:
-                print(f"  - {metric.logged_date.strftime('%Y-%m-%d')}: {metric.value}")
+                print(f"- {metric.logged_date.strftime('%Y-%m-%d')}: {metric.value}")
             
             # Simple trend analysis
             if len(metrics) >= 2:
@@ -142,11 +143,11 @@ def view_health_metrics(session, user):
                 last_val = float(metrics[-1].value)
                 change = last_val - first_val
                 if change > 0:
-                    print(f"  Trend: +{change:.2f} (increased)")
+                    print(f"Trend: +{change:.2f} (increased)")
                 elif change < 0:
-                    print(f"  Trend: {change:.2f} (decreased)")
+                    print(f"Trend: {change:.2f} (decreased)")
                 else:
-                    print("  Trend: No change")
+                    print("Trend: No change")
 
 
 def set_fitness_goals(session, user):
@@ -259,4 +260,3 @@ def member_menu(session, user):
             print("[ERROR] Invalid choice!")
         
         input("\nPress Enter to continue...")
-

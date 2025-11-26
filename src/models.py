@@ -1,4 +1,5 @@
-# Health and Fitness Club Management System
+# Raymond Liu 101264487
+# Afak
 # Database Models
 
 from sqlalchemy import Column, Integer, String, Date, Time, Boolean, DECIMAL, CHAR, Text, DateTime, ForeignKey, CheckConstraint, UniqueConstraint

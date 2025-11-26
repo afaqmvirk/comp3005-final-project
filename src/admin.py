@@ -1,4 +1,5 @@
-# Health and Fitness Club Management System
+# Raymond Liu 101264487
+# Afak
 # Admin Functions
 
 from datetime import datetime, date
@@ -71,8 +72,8 @@ def manage_class_schedule(session, user):
             # SELECT COUNT(*) FROM enrollment WHERE session_id = ?
             enrolled = session.query(Enrollment).filter_by(session_id=sess.id).count()
             print(f"{sess.id}. {sess.name} - {sched.date} at {sched.start_time}")
-            print(f"   Trainer: {sched.trainer.first_name} {sched.trainer.last_name}")
-            print(f"   Enrolled: {enrolled}/{sess.size}")
+            print(f"Trainer: {sched.trainer.first_name} {sched.trainer.last_name}")
+            print(f"Enrolled: {enrolled}/{sess.size}")
     
     elif choice == '2':
         try:
@@ -221,7 +222,7 @@ def process_billing(session, user):
         for bill in unpaid_bills:
             total = sum(float(item.service.price) * item.quantity for item in bill.items)
             print(f"Bill #{bill.id} - {bill.member.first_name} {bill.member.last_name}")
-            print(f"  Date: {bill.date}, Amount: ${total:.2f}")
+            print(f"Date: {bill.date}, Amount: ${total:.2f}")
     
     elif choice == '3':
         try:

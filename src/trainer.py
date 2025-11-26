@@ -1,4 +1,5 @@
-# Health and Fitness Club Management System
+# Raymond Liu 101264487
+# Afak
 # Trainer Functions
 
 from datetime import datetime, date
@@ -124,8 +125,8 @@ def view_member_profiles(session, user):
     print(f"\nFound {len(members)} member(s):")
     for i, member in enumerate(members, 1):
         print(f"\n{i}. {member.first_name} {member.last_name}")
-        print(f"   Email: {member.email}")
-        print(f"   Phone: {member.phone or 'N/A'}")
+        print(f"Email: {member.email}")
+        print(f"Phone: {member.phone or 'N/A'}")
         
         # Last (most recent) metric
         # SELECT * FROM metric WHERE user_id = ? ORDER BY logged_date DESC LIMIT 1
@@ -133,19 +134,19 @@ def view_member_profiles(session, user):
             .order_by(Metric.logged_date.desc()).first()
         
         if last_metric:
-            print(f"   Last Metric: {last_metric.metric_type_obj.metric_name} = {last_metric.value} "
+            print(f"Last Metric: {last_metric.metric_type_obj.metric_name} = {last_metric.value} "
                   f"({last_metric.logged_date.strftime('%Y-%m-%d')})")
         else:
-            print("   Last Metric: None recorded")
+            print("Last Metric: None recorded")
         
         # Current goal
         # SELECT * FROM goal WHERE user_id = ? LIMIT 1
         goal = session.query(Goal).filter_by(user_id=member.id).first()
         if goal:
             target = goal.target_metric
-            print(f"   Current Goal: {target.metric_type_obj.metric_name} = {target.value} by {goal.goal_date}")
+            print(f"Current Goal: {target.metric_type_obj.metric_name} = {target.value} by {goal.goal_date}")
         else:
-            print("   Current Goal: None set")
+            print("Current Goal: None set")
 
 
 def trainer_menu(session, user):
