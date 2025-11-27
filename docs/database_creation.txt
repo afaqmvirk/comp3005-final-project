@@ -1,6 +1,6 @@
 -- Health and Fitness Club Management System Database Schema
 -- Raymond Liu 101264487
--- Afak
+-- Afaq VIrk 101338854
 
 -- Drop tables in correct order (dependent tables first)
 DROP TABLE IF EXISTS enrollment;

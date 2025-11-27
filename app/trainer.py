@@ -1,5 +1,5 @@
 # Raymond Liu 101264487
-# Afak
+# Afaq Virk 101338854
 # Trainer Functions
 
 from datetime import datetime, date

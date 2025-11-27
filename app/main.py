@@ -1,5 +1,5 @@
 # Health and Fitness Club Management System
-# Afak
+# Afaq Virk 101338854
 # Raymond Liu 101264487
 
 import sys
