@@ -5,11 +5,12 @@
 from datetime import datetime, date
 from decimal import Decimal
 from models import Metric, MetricType, Goal, Enrollment, Session, Schedule
+from app.cli_utils import menu, header, pause, sleep, error
 
 
 def member_dashboard(session, user):
     """Display member's personalized dashboard"""
-    print("\n MEMBER DASHBOARD \n")
+    header("Member Dashboard")
     
     # Recent health metrics
     # SELECT * FROM metric WHERE user_id = ? ORDER BY logged_date DESC LIMIT 5
@@ -53,7 +54,7 @@ def member_dashboard(session, user):
 
 def manage_profile(session, user):
     """Update member profile information"""
-    print("\n MANAGE PROFILE \n")
+    header("Manage Profile")
     
     print("\nCurrent Information:")
     print(f"Name: {user.first_name} {user.last_name}")
@@ -82,12 +83,12 @@ def manage_profile(session, user):
             session.commit()
             print("[SUCCESS] Password updated successfully!")
         else:
-            print("[ERROR] Passwords don't match!")
+            error("Passwords don't match!")
 
 
 def log_health_metrics(session, user):
     """Log new health metrics"""
-    print("\n LOG HEALTH METRICS \n")
+    header("Log Health Metrics")
     
     # Display available metric types
     # SELECT * FROM metric_type
@@ -111,15 +112,15 @@ def log_health_metrics(session, user):
         session.commit()
         print("[SUCCESS] Health metric logged successfully!")
     except ValueError:
-        print("[ERROR] Invalid input!")
+        error("Invalid input!")
     except Exception as e:
         session.rollback()
-        print(f"[ERROR] Error: {e}")
+        error(f"Error: {e}")
 
 
 def view_health_metrics(session, user):
     """View health metrics history with trend analysis"""
-    print("\n HEALTH METRICS HISTORY \n")
+    header("Health Metrics History")
     
     # Get all metrics grouped by type
     # SELECT * FROM metric_type
@@ -195,7 +196,7 @@ def set_fitness_goals(session, user):
 
 def cancel_session(session, user):
     """Cancel a scheduled session"""
-    print("\n CANCEL SESSION \n")
+    header("Cancel Session")
     
     # Get user's upcoming enrollments
     today = date.today()
@@ -225,25 +226,24 @@ def cancel_session(session, user):
             session.commit()
             print("[SUCCESS] Session cancelled successfully!")
         else:
-            print("[ERROR] Invalid selection!")
+            error("Invalid selection!")
     except ValueError:
-        print("[ERROR] Invalid input!")
+        error("Invalid input!")
     except Exception as e:
         session.rollback()
-        print(f"[ERROR] Error: {e}")
+        error(f"Error: {e}")
 
 
 def member_menu(session, user):
     """Member main menu"""
     while True:
-        print("\n MEMBER MENU \n")
-        print("1. View Dashboard")
-        print("2. Manage Profile")
-        print("3. Log Health Metrics")
-        print("4. View Health Metrics History")
-        print("5. Logout")
-        
-        choice = input("\nChoice: ").strip()
+        choice = menu("Member Menu", [
+            "View Dashboard",
+            "Manage Profile",
+            "Log Health Metrics",
+            "View Health Metrics History",
+            "Logout",
+        ])
         
         if choice == '1':
             member_dashboard(session, user)
@@ -255,9 +255,10 @@ def member_menu(session, user):
             view_health_metrics(session, user)
         elif choice == '5':
             print("\nLogging out...")
+            sleep(0.8)
             break
         else:
-            print("[ERROR] Invalid choice!")
+            error("Invalid choice!")
         
-        input("\nPress Enter to continue...")
+        pause()
 

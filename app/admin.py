@@ -4,11 +4,12 @@
 
 from datetime import datetime, date
 from models import Equipment, EquipmentStatus, Session, Schedule, Enrollment, Role, User, ScheduleType, Bill, Service, Item
+from app.cli_utils import menu, header, pause, sleep, error
 
 
 def manage_equipment(session, user):
     """Manage equipment maintenance and status"""
-    print("\n EQUIPMENT MANAGEMENT \n")
+    header("Equipment Management")
     
     print("\n1. View All Equipment")
     print("2. Update Equipment Status")
@@ -30,7 +31,7 @@ def manage_equipment(session, user):
         equipment = session.query(Equipment).filter_by(id=eq_id).first()
         
         if not equipment:
-            print("[ERROR] Equipment not found!")
+            error("Equipment not found!")
             return
         
         print(f"\nEquipment: {equipment.name}")
@@ -50,7 +51,7 @@ def manage_equipment(session, user):
 
 def manage_class_schedule(session, user):
     """Create and manage group fitness classes"""
-    print("\n CLASS SCHEDULE MANAGEMENT \n")
+    header("Class Schedule Management")
     
     print("\n1. View All Classes")
     print("2. Create New Class")
@@ -132,7 +133,7 @@ def manage_class_schedule(session, user):
             print("[SUCCESS] Class created successfully!")
         except Exception as e:
             session.rollback()
-            print(f"[ERROR] Error: {e}")
+            error(f"Error: {e}")
     
     elif choice == '3':
         try:
@@ -145,15 +146,15 @@ def manage_class_schedule(session, user):
                 session.commit()
                 print("[SUCCESS] Class cancelled successfully!")
             else:
-                print("[ERROR] Class not found!")
+                error("Class not found!")
         except Exception as e:
             session.rollback()
-            print(f"[ERROR] Error: {e}")
+            error(f"Error: {e}")
 
 
 def process_billing(session, user):
     """Create and manage bills"""
-    print("\n BILLING & PAYMENTS \n")
+    header("Billing & Payments")
     
     print("\n1. Create New Bill")
     print("2. View Unpaid Bills")
@@ -212,7 +213,7 @@ def process_billing(session, user):
             print("[SUCCESS] Bill created successfully!")
         except Exception as e:
             session.rollback()
-            print(f"[ERROR] Error: {e}")
+            error(f"Error: {e}")
     
     elif choice == '2':
         # SELECT * FROM bill WHERE paid = FALSE
@@ -235,22 +236,21 @@ def process_billing(session, user):
                 session.commit()
                 print("[SUCCESS] Payment processed successfully!")
             else:
-                print("[ERROR] Bill not found!")
+                error("Bill not found!")
         except Exception as e:
             session.rollback()
-            print(f"[ERROR] Error: {e}")
+            error(f"Error: {e}")
 
 
 def admin_menu(session, user):
     """Admin main menu"""
     while True:
-        print("\n ADMIN MENU \n")
-        print("1. Manage Equipment")
-        print("2. Manage Class Schedule")
-        print("3. Process Billing")
-        print("4. Logout")
-        
-        choice = input("\nChoice: ").strip()
+        choice = menu("Admin Menu", [
+            "Manage Equipment",
+            "Manage Class Schedule",
+            "Process Billing",
+            "Logout",
+        ])
         
         if choice == '1':
             manage_equipment(session, user)
@@ -260,9 +260,10 @@ def admin_menu(session, user):
             process_billing(session, user)
         elif choice == '4':
             print("\nLogging out...")
+            sleep(0.8)
             break
         else:
-            print("[ERROR] Invalid choice!")
+            error("Invalid choice!")
         
-        input("\nPress Enter to continue...")
+        pause()
 

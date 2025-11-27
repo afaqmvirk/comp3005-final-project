@@ -4,11 +4,12 @@
 
 from datetime import datetime, date
 from models import Schedule, ScheduleType, Session, Enrollment, User, Metric, Goal
+from app.cli_utils import menu, header, pause, sleep, error
 
 
 def view_trainer_schedule(session, user):
     """View trainer's schedule and upcoming sessions"""
-    print("\n MY SCHEDULE \n")
+    header("My Schedule")
     
     today = date.today()
     # SELECT * FROM schedule WHERE trainer_id = ? AND date >= ? ORDER BY date, start_time
@@ -44,7 +45,7 @@ def view_trainer_schedule(session, user):
 
 def set_availability(session, user):
     """Set trainer availability"""
-    print("\n SET AVAILABILITY \n")
+    header("Set Availability")
     
     print("\nSchedule Types:")
     # SELECT * FROM schedule_type
@@ -74,7 +75,7 @@ def set_availability(session, user):
         ).first()
         
         if overlapping:
-            print("[ERROR] This time slot overlaps with an existing schedule!")
+            error("This time slot overlaps with an existing schedule!")
             return
         
         new_schedule = Schedule(
@@ -88,15 +89,15 @@ def set_availability(session, user):
         session.commit()
         print("[SUCCESS] Availability added successfully!")
     except ValueError:
-        print("[ERROR] Invalid input format!")
+        error("Invalid input format!")
     except Exception as e:
         session.rollback()
-        print(f"[ERROR] Error: {e}")
+        error(f"Error: {e}")
 
 
 def view_member_profiles(session, user):
     """Search and view profiles of members assigned to this trainer"""
-    print("\n MEMBER LOOKUP \n")
+    header("Member Lookup")
     
     # Get all members who have sessions with this trainer
     # SELECT DISTINCT user.* FROM user JOIN enrollment ON user.id = enrollment.member_id JOIN session ON enrollment.session_id = session.id JOIN schedule ON session.schedule_id = schedule.id WHERE schedule.trainer_id = ?
@@ -152,13 +153,12 @@ def view_member_profiles(session, user):
 def trainer_menu(session, user):
     """Trainer main menu"""
     while True:
-        print("TRAINER MENU")
-        print("1. View My Schedule")
-        print("2. Set Availability")
-        print("3. Member Lookup")
-        print("4. Logout")
-        
-        choice = input("\nChoice: ").strip()
+        choice = menu("Trainer Menu", [
+            "View My Schedule",
+            "Set Availability",
+            "Member Lookup",
+            "Logout",
+        ])
         
         if choice == '1':
             view_trainer_schedule(session, user)
@@ -168,9 +168,10 @@ def trainer_menu(session, user):
             view_member_profiles(session, user)
         elif choice == '4':
             print("\nLogging out...")
+            sleep(0.8)
             break
         else:
-            print("[ERROR] Invalid choice!")
+            error("Invalid choice!")
         
-        input("\nPress Enter to continue...")
+        pause()
 

@@ -17,6 +17,7 @@ from app.member import member_menu
 from app.trainer import trainer_menu
 from app.admin import admin_menu
 from dotenv import load_dotenv
+from app.cli_utils import init_console, menu, header, pause, clear_screen, sleep, error
 
 # Database Configuration
 load_dotenv()
@@ -38,7 +39,7 @@ def get_db_session():
 
 def login(session):
     """Authenticate user and return user object"""
-    print("\n LOGIN \n")
+    header("Login")
     
     email = input("Email: ").strip()
     password = input("Password: ").strip()
@@ -48,15 +49,17 @@ def login(session):
     
     if user:
         print(f"\nWelcome, {user.first_name} {user.last_name}!")
+        sleep(1.0)
         return user
     else:
-        print("\nInvalid credentials. Please try again.")
+        error("Invalid credentials. Please try again.")
+        sleep(1.2)
         return None
 
 
 def register_member(session):
     """Register a new member"""
-    print("\n MEMBER REGISTRATION \n")
+    header("Member Registration")
     
     try:
         email = input("Email: ").strip()
@@ -88,25 +91,25 @@ def register_member(session):
         session.add(new_user)
         session.commit()
         print("\n[SUCCESS] Registration successful! You can now login.")
+        pause()
     except Exception as e:
         session.rollback()
-        print(f"\n[ERROR] Registration failed: {e}")
+        error(f"Registration failed: {e}")
+        pause()
 
 
 def main():
     """Main application entry point"""
-    print("\n HEALTH AND FITNESS CLUB MANAGEMENT SYSTEM\n")
+    init_console()
+    clear_screen()
+    header("Health and Fitness Club Management System")
     
     # Create database session
     db_session = get_db_session()
     
     try:
         while True:
-            print("\n1. Login")
-            print("2. Register (Member)")
-            print("3. Exit")
-            
-            choice = input("\nChoice: ").strip()
+            choice = menu("Main Menu", ["Login", "Register (Member)", "Exit"])
             
             if choice == '1':
                 user = login(db_session)
@@ -124,11 +127,14 @@ def main():
                 register_member(db_session)
             
             elif choice == '3':
-                print("\nThank you for using the Health and Fitness Club Management System!")
+                clear_screen()
+                header("Goodbye")
+                print("Thank you for using the Health and Fitness Club Management System!")
                 break
             
             else:
-                print("\n[ERROR] Invalid choice!")
+                error("Invalid choice!")
+                pause()
     
     finally:
         db_session.close()
