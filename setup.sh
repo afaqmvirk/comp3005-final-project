@@ -5,10 +5,27 @@
 
 echo "Health & Fitness Club - Setup"
 
+# Create virtual environment
+echo ""
+echo "Setting up Python virtual environment..."
+if [ -d "venv" ]; then
+    echo "Virtual environment already exists."
+else
+    echo "Creating virtual environment..."
+    python3 -m venv venv
+    echo "[SUCCESS] Virtual environment created!"
+fi
+
+# Activate virtual environment
+echo ""
+echo "Activating virtual environment..."
+source venv/bin/activate
+
 # Install Python dependencies
 echo ""
 echo "Installing Python dependencies..."
 pip install -r requirements.txt
+echo "[SUCCESS] Dependencies installed!"
 
 # Database setup
 echo ""
@@ -44,6 +61,7 @@ echo "Update the DATABASE_URL in app/main.py (line 21):"
 echo "  DATABASE_URL = \"postgresql://$DB_USER:password@$DB_HOST/$DB_NAME\""
 echo ""
 echo "To run the application:"
+echo "  source venv/bin/activate    # Activate virtual environment"
 echo "  cd app"
 echo "  python main.py"
 echo ""
@@ -52,4 +70,8 @@ echo "  Admin:   lebron.james@fitclub.com / admin123"
 echo "  Trainer: t1@fitclub.com / trainer123"
 echo ""
 echo "Or register a new member from the main menu."
+echo ""
+echo "Note: The virtual environment has been activated for this session."
+echo "      Remember to activate it in new terminal sessions using:"
+echo "      source venv/bin/activate"
 echo ""
