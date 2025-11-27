@@ -220,6 +220,10 @@ INSERT INTO "user" (email, password, first_name, last_name, date_of_birth, sex, 
 INSERT INTO "user" (email, password, first_name, last_name, date_of_birth, sex, phone, role) VALUES 
     ('t1@fitclub.com', 'trainer123', 'Bronny', 'James', '1990-05-12', 'M', '555-0201', 2);
 
+-- Adding users - MEMBERS
+INSERT INTO "user" (email, password, first_name, last_name, date_of_birth, sex, phone, role) VALUES 
+    ('steph.curry@email.com', 'member123', 'Stephen', 'Curry', '1988-03-14', 'M', '555-3030', 1);
+
 -- Adding equipment
 INSERT INTO equipment (name, room_id, status_id) VALUES 
     -- Yoga Studio A (Room 1)
@@ -250,3 +254,34 @@ INSERT INTO equipment (name, room_id, status_id) VALUES
     ('Reformer 1', 9, 1),
     ('Pilates Ball Set', 9, 1),
     ('Foam Roller Set', 9, 1);
+
+-- Adding sample schedule for Bronny (trainer)
+INSERT INTO schedule (trainer_id, date, start_time, end_time, type) VALUES 
+    (2, '2024-12-01', '09:00:00', '10:00:00', 2),  -- Personal Training
+    (2, '2024-12-01', '14:00:00', '15:00:00', 1);  -- Group Class
+
+-- Adding sample sessions
+INSERT INTO session (schedule_id, size, name, "desc", location, sex_restrict) VALUES 
+    (1, 1, 'Personal Training', 'One-on-one strength training session', 'Personal Training Room 1', 'A'),
+    (2, 20, 'Basketball Skills Training', 'Improve your basketball fundamentals', 'Multi-Purpose Room', 'A');
+
+-- Adding enrollment (Stephen Curry training with Bronny)
+INSERT INTO enrollment (session_id, member_id, attended) VALUES 
+    (1, 3, FALSE),  -- Stephen enrolled in PT session
+    (2, 3, FALSE);  -- Stephen enrolled in group class
+
+-- Adding sample bill
+INSERT INTO bill (admin_id, member_id, date, paid) VALUES 
+    (1, 3, '2024-11-27', FALSE);  -- LeBron created bill for Stephen
+
+-- Adding items to the bill
+INSERT INTO item (bill_id, service_id, quantity) VALUES 
+    (1, 1, 1),  -- Monthly Membership
+    (1, 3, 2);  -- 2 Personal Training Sessions
+
+-- Adding health metrics for Stephen Curry
+INSERT INTO metric (user_id, metric_type, value, logged_date) VALUES 
+    (3, 7, 75, '2024-11-20 09:00:00'),  -- Height: 75 inches (6'3")
+    (3, 1, 185, '2024-11-20 09:00:00'),  -- Weight: 185 lbs
+    (3, 2, 12.5, '2024-11-20 09:00:00'),  -- Body Fat %: 12.5%
+    (3, 4, 58, '2024-11-20 09:00:00');   -- Heart Rate: 58 bpm
