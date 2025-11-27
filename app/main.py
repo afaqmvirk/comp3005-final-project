@@ -16,9 +16,17 @@ from models import User, Role
 from app.member import member_menu
 from app.trainer import trainer_menu
 from app.admin import admin_menu
+from dotenv import load_dotenv
 
 # Database Configuration
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@address/Final_Project")
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not set. Create a .env with DATABASE_URL=... or set the "
+        "environment variable before running the app."
+    )
 
 
 def get_db_session():
