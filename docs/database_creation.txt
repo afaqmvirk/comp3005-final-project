@@ -211,3 +211,62 @@ INSERT INTO room (name, capacity) VALUES
     ('Boxing Studio', 15),
     ('Pilates Studio', 12),
     ('Multi-Purpose Room', 35);
+
+-- Adding users - ADMINS
+INSERT INTO "user" (email, password, first_name, last_name, date_of_birth, sex, phone, role) VALUES 
+    ('lebron.james@fitclub.com', 'admin123', 'LeBron', 'James', '1984-12-30', 'M', '555-2323', 3);
+
+-- Adding users - TRAINERS
+INSERT INTO "user" (email, password, first_name, last_name, date_of_birth, sex, phone, role) VALUES 
+    ('t1@fitclub.com', 'trainer123', 'Bronny', 'James', '1990-05-12', 'M', '555-0201', 2);
+
+-- Adding equipment
+INSERT INTO equipment (name, room_id, status_id) VALUES 
+    -- Yoga Studio A (Room 1)
+    ('Yoga Mat Set (20 mats)', 1, 1),
+    ('Yoga Block Set', 1, 1),
+    ('Resistance Band Set', 1, 1),
+    
+    -- Spin Room (Room 2)
+    ('Spin Bike 1', 2, 1),
+    ('Spin Bike 2', 2, 1),
+    ('Spin Bike 3', 2, 1),
+    ('Spin Bike 4', 2, 2),
+    ('Spin Bike 5', 2, 1),
+    
+    -- Weight Training Floor (Room 3)
+    ('Bench Press Station 1', 3, 1),
+    ('Bench Press Station 2', 3, 1),
+    ('Squat Rack 1', 3, 1),
+    ('Squat Rack 2', 3, 2),
+    ('Leg Press Machine', 3, 1),
+    ('Cable Crossover Machine', 3, 1),
+    ('Dumbbell Set (5-100 lbs)', 3, 1),
+    ('Olympic Barbell Set', 3, 1),
+    ('Smith Machine', 3, 3),
+    ('Lat Pulldown Machine', 3, 1),
+    
+    -- Cardio Zone (Room 4)
+    ('Treadmill 1', 4, 1),
+    ('Treadmill 2', 4, 1),
+    ('Treadmill 3', 4, 1),
+    ('Treadmill 4', 4, 2),
+    ('Elliptical 1', 4, 1),
+    ('Elliptical 2', 4, 1),
+    ('Rowing Machine 1', 4, 1),
+    ('Rowing Machine 2', 4, 3),
+    ('Stationary Bike 1', 4, 1),
+    ('Stationary Bike 2', 4, 1),
+    
+    -- Boxing Studio (Room 8)
+    ('Heavy Bag 1', 8, 1),
+    ('Heavy Bag 2', 8, 1),
+    ('Speed Bag', 8, 1),
+    ('Boxing Ring', 8, 1),
+    ('Boxing Gloves Set', 8, 1),
+    
+    -- Pilates Studio (Room 9)
+    ('Reformer 1', 9, 1),
+    ('Reformer 2', 9, 1),
+    ('Pilates Ball Set', 9, 1),
+    ('Foam Roller Set', 9, 1);
