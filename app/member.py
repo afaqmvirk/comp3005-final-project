@@ -260,3 +260,4 @@ def member_menu(session, user):
             print("[ERROR] Invalid choice!")
         
         input("\nPress Enter to continue...")
+

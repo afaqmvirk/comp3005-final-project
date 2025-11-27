@@ -2,14 +2,20 @@
 # Afak
 # Raymond Liu 101264487
 
+import sys
+from pathlib import Path
+
+# Add parent directory to path so we can import models
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import os
 from models import User, Role
-from member import member_menu
-from trainer import trainer_menu
-from admin import admin_menu
+from app.member import member_menu
+from app.trainer import trainer_menu
+from app.admin import admin_menu
 
 # Database Configuration
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@address/Final_Project")
@@ -122,3 +128,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
