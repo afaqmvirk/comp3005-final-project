@@ -26,8 +26,11 @@ def member_dashboard(session, user):
         print("\nNo health metrics recorded yet.")
     
     # Active goals
-    # SELECT * FROM goal WHERE user_id = ?
-    goals = session.query(Goal).filter_by(user_id=user.id).all()
+    # SELECT * FROM goal JOIN metric ON goal.metric_id = metric.id WHERE metric.user_id = ?
+    goals = (session.query(Goal)
+             .join(Metric, Goal.metric_id == Metric.id)
+             .filter(Metric.user_id == user.id)
+             .all())
     if goals:
         print(f"\nActive Fitness Goals: {len(goals)}")
         for goal in goals:
@@ -171,7 +174,7 @@ def set_fitness_goals(session, user):
         # Check if an existing goal for this metric type exists
         existing_goal = (session.query(Goal)
                          .join(Metric, Goal.metric_id == Metric.id)
-                         .filter(Goal.user_id == user.id, Metric.metric_type == metric_type_id)
+                         .filter(Metric.user_id == user.id, Metric.metric_type == metric_type_id)
                          .first())
 
         if existing_goal:
@@ -206,7 +209,6 @@ def set_fitness_goals(session, user):
         else:
             # Create a new goal
             new_goal = Goal(
-                user_id=user.id,
                 metric_id=goal_metric.id,
                 goal_date=goal_date
             )
@@ -225,7 +227,10 @@ def view_goal_progress(session, user):
     """Display progress towards each fitness goal with latest metrics."""
     header("Goal Progress")
 
-    goals = session.query(Goal).filter_by(user_id=user.id).all()
+    goals = (session.query(Goal)
+             .join(Metric, Goal.metric_id == Metric.id)
+             .filter(Metric.user_id == user.id)
+             .all())
     if not goals:
         print("\nNo fitness goals set yet.")
         return
@@ -278,6 +283,68 @@ def view_goal_progress(session, user):
             print("  No logged metrics yet to measure progress.")
 
 
+def browse_and_enroll_sessions(session, user):
+    """Browse upcoming sessions and enroll if space is available."""
+    header("Browse & Enroll in Sessions")
+
+    today = date.today()
+    # Upcoming sessions with schedule info
+    sessions = (session.query(Session)
+                .join(Schedule)
+                .filter(Schedule.date >= today)
+                .order_by(Schedule.date, Schedule.start_time)
+                .all())
+
+    if not sessions:
+        print("\nNo upcoming sessions are available at the moment.")
+        return
+
+    print("\nAvailable Sessions:")
+    rows = []
+    for i, sess in enumerate(sessions, 1):
+        sched = sess.schedule
+        trainer = sched.trainer
+        enrolled_count = len(sess.enrollments)
+        spots_left = max(0, sess.size - enrolled_count)
+        print(f"{i}. {sess.name} | {sched.date} {sched.start_time}-{sched.end_time} | "
+              f"Trainer: {trainer.first_name} {trainer.last_name} | "
+              f"Location: {sess.location or 'TBA'} | "
+              f"Capacity: {enrolled_count}/{sess.size} (Left: {spots_left})")
+
+    try:
+        choice = int(input("\nSelect a session to enroll (0 to go back): ").strip())
+        if choice == 0:
+            return
+        if not (1 <= choice <= len(sessions)):
+            error("Invalid selection!")
+            return
+
+        selected = sessions[choice - 1]
+        # Duplicate enrollment check
+        existing = (session.query(Enrollment)
+                    .filter(Enrollment.session_id == selected.id,
+                            Enrollment.member_id == user.id)
+                    .first())
+        if existing:
+            error("You are already enrolled in this session.")
+            return
+
+        # Capacity check
+        current = len(selected.enrollments)
+        if current >= selected.size:
+            error("This session is full.")
+            return
+
+        enrollment = Enrollment(session_id=selected.id, member_id=user.id, attended=False)
+        session.add(enrollment)
+        session.commit()
+        print("[SUCCESS] You have been enrolled in the session!")
+    except ValueError:
+        error("Invalid input!")
+    except Exception as e:
+        session.rollback()
+        error(f"Error: {e}")
+
 def cancel_session(session, user):
     """Cancel a scheduled session"""
     header("Cancel Session")
@@ -328,6 +395,8 @@ def member_menu(session, user):
             "View Health Metrics History",
             "Set Fitness Goals",
             "View Goal Progress",
+            "Browse & Enroll in Sessions",
+            "Cancel Session",
             "Logout",
         ])
         
@@ -344,6 +413,10 @@ def member_menu(session, user):
         elif choice == '6':
             view_goal_progress(session, user)
         elif choice == '7':
+            browse_and_enroll_sessions(session, user)
+        elif choice == '8':
+            cancel_session(session, user)
+        elif choice == '9':
             print("\nLogging out...")
             sleep(0.8)
             break

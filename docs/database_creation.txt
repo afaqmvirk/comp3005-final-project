@@ -88,10 +88,8 @@ CREATE TABLE metric (
 -- Create goal table
 CREATE TABLE goal (
     id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
     metric_id INT NOT NULL,
     goal_date DATE NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
     FOREIGN KEY (metric_id) REFERENCES metric(id)
 );
 

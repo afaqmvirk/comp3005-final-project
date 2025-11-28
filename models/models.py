@@ -36,7 +36,6 @@ class User(Base):
     
     role_obj = relationship("Role", back_populates="users")
     metrics = relationship("Metric", back_populates="user", cascade="all, delete-orphan")
-    goals = relationship("Goal", back_populates="user", cascade="all, delete-orphan")
     schedules = relationship("Schedule", back_populates="trainer", foreign_keys="Schedule.trainer_id")
     enrollments = relationship("Enrollment", back_populates="member")
     bills_as_member = relationship("Bill", back_populates="member", foreign_keys="Bill.member_id")
@@ -113,11 +112,9 @@ class Goal(Base):
     __tablename__ = 'goal'
     
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     metric_id = Column(Integer, ForeignKey('metric.id'), nullable=False)
     goal_date = Column(Date, nullable=False)
     
-    user = relationship("User", back_populates="goals")
     target_metric = relationship("Metric", back_populates="goals")
 
 
