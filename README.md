@@ -14,14 +14,19 @@ Link to demo: TBA
   - `trainer.py`: Trainer workflows and scheduling
   - `admin.py`: Admin workflows (rooms, equipment, billing)
   - `cli_utils.py`: Console UI helpers
+  - `auth.py`: Handles connection to database
+  - `seed.py`: Handles reseting/seeding database
 - `models/`
   - `models.py`: SQLAlchemy ORM models (User, Role, Metric, Goal, Schedule, Session, Billing, etc.)
   - `__init__.py`: Model exports
 - `docs/`
-  - `database_creation.txt`: SQL to create and seed the database
+
+  - `database_creation.txt` original SQL schema/seed used for documentation (no longer used)
   - `ERD.pdf`: Entity-Relationship diagram
   - `report.tex` / `report.pdf`: Project report
-- `setup.sh`: Optional helper to bootstrap venv, dependencies, and database
+
+- Root
+  - `env.template`: example environment variables (copy to `.env` and edit)
 
 ### Prerequisites
 
@@ -31,12 +36,14 @@ Link to demo: TBA
 
 ### Environment Configuration
 
-The app reads the database URL from `.env` using `python-dotenv`.
-
-1. Create a file named `.env` in the project root with:
+Use a `.env` file with PG\* variables (preferred). Copy `env.template` to `.env` and fill in:
 
 ```
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DBNAME
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=Final_Project
+PGUSER=postgres
+PGPASSWORD=your_password
 ```
 
 ### Install Dependencies
@@ -54,18 +61,20 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-### Database Setup
+### Database Setup (Reset/Seed for Testing)
+
+The application can reset the schema and seed sample data via the ORM:
 
 ```
-# Ensure your DATABASE_URL points to an existing server and a DB you can modify
-psql -U <user> -h <host> -d <db> -f docs/database_creation.txt
+python app/main.py --reset
 ```
 
-Option B: Use `setup.sh` which will prompt for host/user/password and create/seed the DB:
+This will:
 
-```
-bash setup.sh
-```
+- Drop and recreate all tables
+- Insert roles, lookup tables, users, schedules/sessions, enrollments, services/bills/items, and sample metrics
+
+If you prefer raw SQL, `docs/database_creation.txt` is provided for reference, but it is not required to run the app.
 
 ### Run the Application
 
@@ -78,6 +87,7 @@ python main.py
 ### Notes
 
 - Ensure `.env` is present before launching; otherwise the app will raise an error on startup.
-- If you change schema or seed data, re-run `docs/database_creation.txt` against your database.
-- Sample admin/trainer credentials are provided in the seed data (see `docs/database_creation.txt`).
+- Use `python app/main.py --reset` to rebuild and seed the database for tests.
+- `docs/database_creation.txt` is optional and kept for documentation/deliverables.
+- Sample admin/trainer credentials are provided in the seed data.
 - See `report.pdf` for additional information.
