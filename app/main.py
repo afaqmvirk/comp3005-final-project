@@ -16,17 +16,17 @@ from models import User, Role
 from app.member import member_menu
 from app.trainer import trainer_menu
 from app.admin import admin_menu
-from dotenv import load_dotenv
 from app.cli_utils import init_console, menu, header, pause, clear_screen, sleep, error
+from app.auth import ensure_database_exists, build_database_url
+from app.seed import reset_and_seed
 
-# Database Configuration
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
+# Database Configuration (supports DATABASE_URL or PG* variables)
+ensure_database_exists()
+DATABASE_URL = build_database_url()
 if not DATABASE_URL:
     raise RuntimeError(
-        "DATABASE_URL is not set. Create a .env with DATABASE_URL=... or set the "
-        "environment variable before running the app."
+        "Database configuration not found. Provide "
+        "PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD in your environment/.env."
     )
 
 
@@ -100,6 +100,13 @@ def register_member(session):
 
 def main():
     """Main application entry point"""
+    # Support reset flag for test setup used for our video demo
+    if any(arg in ("--reset", "-r") for arg in sys.argv[1:]):
+        print("Resetting and seeding the database...")
+        reset_and_seed(DATABASE_URL)
+        print("[SUCCESS] Database reset and seed complete.")
+        return
+
     init_console()
     clear_screen()
     header("Health and Fitness Club Management System")
