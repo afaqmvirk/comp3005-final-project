@@ -167,8 +167,22 @@ def set_fitness_goals(session, user):
         target_value = float(input("Target value: ").strip())
         goal_date_str = input("Target date (YYYY-MM-DD): ").strip()
         goal_date = datetime.strptime(goal_date_str, '%Y-%m-%d').date()
-        
-        # Create a metric entry for the goal
+
+        # Check if an existing goal for this metric type exists
+        existing_goal = (session.query(Goal)
+                         .join(Metric, Goal.metric_id == Metric.id)
+                         .filter(Goal.user_id == user.id, Metric.metric_type == metric_type_id)
+                         .first())
+
+        if existing_goal:
+            print("\nA goal for this metric already exists:")
+            print(f"- Current target: {existing_goal.target_metric.value} by {existing_goal.goal_date}")
+            overwrite = input("Overwrite existing goal? (y/N): ").strip().lower()
+            if overwrite != 'y':
+                print("Keeping existing goal unchanged.")
+                return
+
+        # Create a metric entry representing the target value (used to tie goal to type/value)
         goal_metric = Metric(
             user_id=user.id,
             metric_type=metric_type_id,
@@ -177,21 +191,91 @@ def set_fitness_goals(session, user):
         )
         session.add(goal_metric)
         session.flush()
-        
-        # Create the goal
-        new_goal = Goal(
-            user_id=user.id,
-            metric_id=goal_metric.id,
-            goal_date=goal_date
-        )
-        session.add(new_goal)
+
+        if existing_goal:
+            # Replace existing goal's target and date
+            old_metric = existing_goal.target_metric
+            existing_goal.metric_id = goal_metric.id
+            existing_goal.goal_date = goal_date
+            session.flush()
+            # Remove the previously attached target metric row to avoid clutter
+            try:
+                session.delete(old_metric)
+            except Exception:
+                pass
+        else:
+            # Create a new goal
+            new_goal = Goal(
+                user_id=user.id,
+                metric_id=goal_metric.id,
+                goal_date=goal_date
+            )
+            session.add(new_goal)
+
         session.commit()
-        print("[SUCCESS] Fitness goal set successfully!")
+        print("[SUCCESS] Fitness goal saved!")
     except ValueError:
         print("[ERROR] Invalid input format!")
     except Exception as e:
         session.rollback()
         print(f"[ERROR] Error: {e}")
+
+
+def view_goal_progress(session, user):
+    """Display progress towards each fitness goal with latest metrics."""
+    header("Goal Progress")
+
+    goals = session.query(Goal).filter_by(user_id=user.id).all()
+    if not goals:
+        print("\nNo fitness goals set yet.")
+        return
+
+    for goal in goals:
+        target_metric = goal.target_metric
+        metric_type_id = target_metric.metric_type
+        metric_name = target_metric.metric_type_obj.metric_name
+        target_val = float(target_metric.value)
+
+        # Latest actual metric EXCLUDING the target metric row
+        latest_actual = (session.query(Metric)
+                         .filter(Metric.user_id == user.id,
+                                 Metric.metric_type == metric_type_id,
+                                 Metric.id != goal.metric_id)
+                         .order_by(Metric.logged_date.desc())
+                         .first())
+
+        # Baseline value at or before goal creation (excluding the goal target row)
+        baseline = (session.query(Metric)
+                    .filter(Metric.user_id == user.id,
+                            Metric.metric_type == metric_type_id,
+                            Metric.id != goal.metric_id,
+                            Metric.logged_date <= target_metric.logged_date)
+                    .order_by(Metric.logged_date.desc())
+                    .first())
+
+        print(f"\n- {metric_name}")
+        print(f"  Target: {target_val:.2f} by {goal.goal_date}")
+
+        if latest_actual:
+            current_val = float(latest_actual.value)
+            delta = target_val - current_val
+            status = "increase" if delta > 0 else ("decrease" if delta < 0 else "reach")
+            print(f"  Latest: {current_val:.2f} ({latest_actual.logged_date.strftime('%Y-%m-%d')})")
+            if delta != 0:
+                print(f"  Remaining to {status}: {abs(delta):.2f}")
+            else:
+                print("  Goal value reached.")
+
+            # Progress percentage relative to baseline, if available/meaningful
+            if baseline and float(baseline.value) != target_val:
+                baseline_val = float(baseline.value)
+                total_needed = target_val - baseline_val
+                progressed = current_val - baseline_val
+                if total_needed != 0:
+                    pct = max(0.0, min(1.0, progressed / total_needed)) * 100.0
+                    print(f"  Progress: {pct:.0f}% since goal set (baseline {baseline_val:.2f})")
+        else:
+            print("  No logged metrics yet to measure progress.")
 
 
 def cancel_session(session, user):
@@ -242,6 +326,8 @@ def member_menu(session, user):
             "Manage Profile",
             "Log Health Metrics",
             "View Health Metrics History",
+            "Set Fitness Goals",
+            "View Goal Progress",
             "Logout",
         ])
         
@@ -254,6 +340,10 @@ def member_menu(session, user):
         elif choice == '4':
             view_health_metrics(session, user)
         elif choice == '5':
+            set_fitness_goals(session, user)
+        elif choice == '6':
+            view_goal_progress(session, user)
+        elif choice == '7':
             print("\nLogging out...")
             sleep(0.8)
             break
