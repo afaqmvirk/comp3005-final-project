@@ -306,9 +306,10 @@ def browse_and_enroll_sessions(session, user):
         trainer = sched.trainer
         enrolled_count = len(sess.enrollments)
         spots_left = max(0, sess.size - enrolled_count)
+        room_name = sess.room.name if getattr(sess, "room", None) else (sess.location or "TBA")
         print(f"{i}. {sess.name} | {sched.date} {sched.start_time}-{sched.end_time} | "
               f"Trainer: {trainer.first_name} {trainer.last_name} | "
-              f"Location: {sess.location or 'TBA'} | "
+              f"Location: {room_name} | "
               f"Capacity: {enrolled_count}/{sess.size} (Left: {spots_left})")
 
     try:

@@ -128,8 +128,10 @@ CREATE TABLE session (
     name VARCHAR(100) NOT NULL,
     "desc" TEXT,
     location VARCHAR(255),
+    room_id INT,
     sex_restrict CHAR(1) CHECK (sex_restrict IN ('M', 'F', 'A')),
-    FOREIGN KEY (schedule_id) REFERENCES schedule(id) ON DELETE CASCADE
+    FOREIGN KEY (schedule_id) REFERENCES schedule(id) ON DELETE CASCADE,
+    FOREIGN KEY (room_id) REFERENCES room(id)
 );
 
 -- Create enrollment table

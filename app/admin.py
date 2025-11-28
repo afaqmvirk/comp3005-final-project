@@ -3,7 +3,7 @@
 # Admin Functions
 
 from datetime import datetime, date
-from models import Equipment, EquipmentStatus, Session, Schedule, Enrollment, Role, User, ScheduleType, Bill, Service, Item
+from models import Equipment, EquipmentStatus, Session, Schedule, Enrollment, Role, User, ScheduleType, Bill, Service, Item, Room
 from app.cli_utils import menu, header, pause, sleep, error
 
 
@@ -74,7 +74,8 @@ def manage_class_schedule(session, user):
             enrolled = session.query(Enrollment).filter_by(session_id=sess.id).count()
             print(f"{sess.id}. {sess.name} - {sched.date} at {sched.start_time}")
             print(f"Trainer: {sched.trainer.first_name} {sched.trainer.last_name}")
-            print(f"Enrolled: {enrolled}/{sess.size}")
+            loc = sess.room.name if getattr(sess, "room", None) else (sess.location or "TBA")
+            print(f"Location: {loc} | Enrolled: {enrolled}/{sess.size}")
     
     elif choice == '2':
         try:
@@ -91,6 +92,17 @@ def manage_class_schedule(session, user):
             trainer_choice = int(input("\nSelect trainer: ").strip())
             selected_trainer = trainers[trainer_choice - 1]
             
+            # Get room
+            rooms = session.query(Room).all()
+            print("\nRooms:")
+            for r in rooms:
+                print(f"{r.id}. {r.name} (capacity {r.capacity})")
+            room_id = int(input("\nSelect room (ID): ").strip())
+            selected_room = session.query(Room).filter_by(id=room_id).first()
+            if not selected_room:
+                error("Invalid room selection!")
+                return
+            
             # Get class details
             date_str = input("Date (YYYY-MM-DD): ").strip()
             class_date = datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -103,8 +115,21 @@ def manage_class_schedule(session, user):
             
             class_name = input("Class name: ").strip()
             class_desc = input("Class description: ").strip()
-            location = input("Location: ").strip()
             capacity = int(input("Capacity: ").strip())
+            
+            # Room conflict check
+            conflict = (session.query(Session)
+                        .join(Schedule)
+                        .filter(
+                            Session.room_id == selected_room.id,
+                            Schedule.date == class_date,
+                            Schedule.start_time < end_time,
+                            Schedule.end_time > start_time
+                        )
+                        .first())
+            if conflict:
+                error("Room is already booked for an overlapping time slot.")
+                return
             
             # Create schedule
             # SELECT * FROM schedule_type WHERE type = 'Group Class' LIMIT 1
@@ -125,7 +150,8 @@ def manage_class_schedule(session, user):
                 size=capacity,
                 name=class_name,
                 desc=class_desc,
-                location=location,
+                location=selected_room.name,
+                room_id=selected_room.id,
                 sex_restrict='A'
             )
             session.add(new_session)

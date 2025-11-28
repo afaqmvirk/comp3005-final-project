@@ -127,6 +127,7 @@ class Room(Base):
     capacity = Column(Integer, nullable=False)
     
     equipment = relationship("Equipment", back_populates="room")
+    sessions = relationship("Session", back_populates="room")
 
 
 class EquipmentStatus(Base):
@@ -188,10 +189,12 @@ class Session(Base):
     name = Column(String(100), nullable=False)
     desc = Column(Text)
     location = Column(String(255))
+    room_id = Column(Integer, ForeignKey('room.id'))
     sex_restrict = Column(CHAR(1), CheckConstraint("sex_restrict IN ('M', 'F', 'A')"))
     
     schedule = relationship("Schedule", back_populates="session")
     enrollments = relationship("Enrollment", back_populates="session", cascade="all, delete-orphan")
+    room = relationship("Room", back_populates="sessions")
 
 
 class Enrollment(Base):
