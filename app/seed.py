@@ -126,7 +126,7 @@ def reset_and_seed(database_url: str) -> None:
             role=roles["Trainer"].id,
         )
         member_user = User(
-            email="steph.curry@email.com",
+            email="steph.curry@fitclub.com",
             password="member123",
             first_name="Stephen",
             last_name="Curry",
