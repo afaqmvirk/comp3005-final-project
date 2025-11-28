@@ -2,6 +2,8 @@
 -- Raymond Liu 101264487
 -- Afaq VIrk 101338854
 
+-- NOT USED BY APP, SEEDING DONE BY ORM, THIS IS FOR DOCUMENTATION PURPOSES ONLY
+
 -- Drop tables in correct order (dependent tables first)
 DROP TABLE IF EXISTS enrollment;
 DROP TABLE IF EXISTS session;
