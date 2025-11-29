@@ -23,10 +23,11 @@ Link to demo: TBA
 
   - `database_creation.txt` original SQL schema/seed used for documentation (no longer used)
   - `ERD.pdf`: Entity-Relationship diagram
-  - `report.tex` / `report.pdf`: Project report
+  - `report.pdf`: Project report
 
 - Root
   - `env.template`: example environment variables (copy to `.env` and edit)
+  - `requirements.txt`: python package requirements
 
 ### Prerequisites
 
