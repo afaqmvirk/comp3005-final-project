@@ -111,7 +111,7 @@ def reset_and_seed(database_url: str) -> None:
 
         # Users
         admin_user = User(
-            email="lebron.james@fitclub.com",
+            email="lebron.james@dagoat.com",
             password="admin123",
             first_name="LeBron",
             last_name="James",
@@ -121,7 +121,7 @@ def reset_and_seed(database_url: str) -> None:
             role=roles["Admin"].id,
         )
         trainer_user = User(
-            email="t1@fitclub.com",
+            email="t1@nepo.com",
             password="trainer123",
             first_name="Bronny",
             last_name="James",
@@ -131,10 +131,10 @@ def reset_and_seed(database_url: str) -> None:
             role=roles["Trainer"].id,
         )
         member_user = User(
-            email="steph.curry@fitclub.com",
+            email="max.ver@dudududu.com",
             password="member123",
-            first_name="Stephen",
-            last_name="Curry",
+            first_name="Max",
+            last_name="Verstappen",
             date_of_birth=date(1988, 3, 14),
             sex="M",
             phone="555-3030",

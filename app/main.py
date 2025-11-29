@@ -110,7 +110,7 @@ def main():
     init_console()
     clear_screen()
     header("Health and Fitness Club Management System")
-    sleep(5)
+    sleep(1)
     
     # Create database session
     db_session = get_db_session()
