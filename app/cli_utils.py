@@ -1,3 +1,8 @@
+# Raymond Liu 101264487
+# Afaq Virk 101338854
+# CLI helpers + pretty print
+
+
 import os
 import time
 from typing import List

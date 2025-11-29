@@ -1,3 +1,7 @@
+# Raymond Liu 101264487
+# Afaq Virk 101338854
+# Database setup + creation
+
 import os
 from typing import Optional
 

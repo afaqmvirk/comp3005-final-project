@@ -1,3 +1,8 @@
+# Raymond Liu 101264487
+# Afaq Virk 101338854
+# Database seeding
+
+
 from datetime import date, time, datetime
 from decimal import Decimal
 from typing import Dict
