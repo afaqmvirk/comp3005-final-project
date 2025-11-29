@@ -41,6 +41,17 @@ def member_dashboard(session, user):
     
     # Upcoming enrollments
     today = date.today()
+
+    # Past classes attended count
+    past_count = (session.query(Enrollment)
+                  .join(Session)
+                  .join(Schedule)
+                  .filter(Enrollment.member_id == user.id,
+                          Schedule.date < today,
+                          Enrollment.attended == True)
+                  .count())
+    print(f"\nPast Classes Attended: {past_count}")
+
     # SELECT * FROM enrollment JOIN session ON enrollment.session_id = session.id JOIN schedule ON session.schedule_id = schedule.id WHERE enrollment.member_id = ? AND schedule.date >= ? ORDER BY schedule.date, schedule.start_time LIMIT 5
     upcoming = session.query(Enrollment).join(Session).join(Schedule)\
         .filter(Enrollment.member_id == user.id, Schedule.date >= today)\
