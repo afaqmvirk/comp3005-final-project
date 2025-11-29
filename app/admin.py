@@ -17,37 +17,45 @@ def manage_equipment(session, user):
     
     choice = input("\nChoice: ").strip()
     
-    if choice == '1':
-        # SELECT * FROM equipment
-        equipment_list = session.query(Equipment).all()
-        print("\nEquipment List:")
-        for eq in equipment_list:
-            room_name = eq.room.name if eq.room else "N/A"
-            print(f"{eq.id}. {eq.name} - Room: {room_name} - Status: {eq.status.type}")
-    
-    elif choice == '2':
-        eq_id = int(input("\nEquipment ID: ").strip())
-        # SELECT * FROM equipment WHERE id = ? LIMIT 1
-        equipment = session.query(Equipment).filter_by(id=eq_id).first()
+    try:
+        if choice == '1':
+            # SELECT * FROM equipment
+            equipment_list = session.query(Equipment).all()
+            print("\nEquipment List:")
+            for eq in equipment_list:
+                room_name = eq.room.name if eq.room else "N/A"
+                print(f"{eq.id}. {eq.name} - Room: {room_name} - Status: {eq.status.type}")
         
-        if not equipment:
-            error("Equipment not found!")
-            return
-        
-        print(f"\nEquipment: {equipment.name}")
-        print(f"Current Status: {equipment.status.type}")
-        
-        # SELECT * FROM equipment_status
-        statuses = session.query(EquipmentStatus).all()
-        print("\nAvailable Statuses:")
-        for status in statuses:
-            print(f"{status.id}. {status.type}")
-        
-        new_status = int(input("\nNew status ID: ").strip())
-        equipment.status_id = new_status
-        session.commit()
-        print("[SUCCESS] Equipment status updated!")
-
+        elif choice == '2':
+            eq_id = int(input("\nEquipment ID: ").strip())
+            # SELECT * FROM equipment WHERE id = ? LIMIT 1
+            equipment = session.query(Equipment).filter_by(id=eq_id).first()
+            
+            if not equipment:
+                error("Equipment not found!")
+                return
+            
+            print(f"\nEquipment: {equipment.name}")
+            print(f"Current Status: {equipment.status.type}")
+            
+            # SELECT * FROM equipment_status
+            statuses = session.query(EquipmentStatus).all()
+            print("\nAvailable Statuses:")
+            for status in statuses:
+                print(f"{status.id}. {status.type}")
+            
+            new_status = int(input("\nNew status ID: ").strip())
+            if not any(s.id == new_status for s in statuses):
+                error("Invalid status ID!")
+                return
+            equipment.status_id = new_status
+            session.commit()
+            print("[SUCCESS] Equipment status updated!")
+        else:
+            error("Invalid choice!")
+    except Exception as e:
+        session.rollback()
+        error(f"Error: {e}")
 
 def manage_class_schedule(session, user):
     """Create and manage group fitness classes"""

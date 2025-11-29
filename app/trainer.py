@@ -141,8 +141,8 @@ def view_member_profiles(session, user):
             print("Last Metric: None recorded")
         
         # Current goal
-        # SELECT * FROM goal WHERE user_id = ? LIMIT 1
-        goal = session.query(Goal).filter_by(user_id=member.id).first()
+        # SELECT * FROM goal JOIN metric ON goal.metric_id = metric.id WHERE metric.user_id = ? LIMIT 1
+        goal = session.query(Goal).join(Metric).filter(Metric.user_id == member.id).first()
         if goal:
             target = goal.target_metric
             print(f"Current Goal: {target.metric_type_obj.metric_name} = {target.value} by {goal.goal_date}")
