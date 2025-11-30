@@ -4,7 +4,7 @@ A console-based management system for a health and fitness club, built with Pyth
 
 ### Video Demo
 
-Link to demo: TBA
+Link to demo: https://youtu.be/VrSF7mgAM7Y
 
 ### Project Structure
 
