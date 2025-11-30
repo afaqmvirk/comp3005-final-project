@@ -8,6 +8,8 @@ Built by Afaq Virk and Raymond Liu
 
 Link to demo: https://youtu.be/VrSF7mgAM7Y
 
+*(Not everything we wish to speak about could fit in the video - `report.pdf` adds a few extra details)*
+
 ### Project Structure
 
 - `app/`
