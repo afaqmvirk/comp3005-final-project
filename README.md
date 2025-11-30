@@ -2,6 +2,8 @@
 
 A console-based management system for a health and fitness club, built with Python and PostgreSQL using SQLAlchemy ORM.
 
+Built by Afaq Virk and Raymond Liu
+
 ### Video Demo
 
 Link to demo: https://youtu.be/VrSF7mgAM7Y
