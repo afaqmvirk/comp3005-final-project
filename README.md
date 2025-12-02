@@ -8,7 +8,7 @@ Built by Afaq Virk and Raymond Liu
 
 Link to demo: https://youtu.be/VrSF7mgAM7Y
 
-*(Not everything we wish to speak about could fit in the video - `report.pdf` adds a few extra details)*
+⚠️ **IMPORTANT NOTE ON VIDEO:** It appears that the ERD was not correctly rendered in the video. See `ERD.pdf` for the most recent version. The only major difference was that the double lines for participation in the model are not present. Otherwise, it is the same.
 
 ### Project Structure
 
